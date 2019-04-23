@@ -1,0 +1,42 @@
+version: '2'
+
+services:
+        # redis:
+        #         image: redis:5.0.3-alpine
+        #         volumes:
+        #         - ${PWD}/tmp/data:/data
+        #         ports:
+        #         - "6379"
+        #         container_name: "redis-mosq"
+        #         networks:
+        #         - mosqnet
+
+        postgres:
+                ports:
+                - "5432:5432"
+                container_name: "postgres-mosq"
+                build:
+                        context: "./postgres/"
+                        dockerfile: "dockerfile"
+                networks:
+                - mosqnet
+
+        mosquitto:
+                build: .
+                volumes:
+                - ${PWD}/auth-plugin.conf:/etc/mosquitto.d/auth-plugin.conf
+                ports:
+                - "1883:1883"
+                - "9883:9883"
+                environment:
+                - DOMAIN=example.local
+                - PORT=8080
+                networks:
+                - mosqnet
+                depends_on:
+                - postgres
+                labels:
+                - "local.example.description=Mosquitto v1.5.5 MQTT server"
+
+networks:
+        mosqnet:

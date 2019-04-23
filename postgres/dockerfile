@@ -1,0 +1,10 @@
+FROM postgres
+
+ENV POSTGRES_USER mosq_user
+ENV POSTGRES_PASSWORD 12345678
+ENV POSTGRES_DB broker_data
+
+ADD ./users.csv /data/
+ADD ./postgres_setup.sql /docker-entrypoint-initdb.d/
+
+EXPOSE 5432
